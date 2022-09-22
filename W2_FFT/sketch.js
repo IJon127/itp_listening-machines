@@ -40,25 +40,32 @@ let sliderConfigs = [
     //     initial: 0.5,
     //     step: 0.01
     // },
-    // {
-    //     name: 'scale',
-    //     min: 0,
-    //     max: 1,
-    //     initial: 0.5,
-    //     step: 0.01
-    // },
-    // {
-    //     name: 'random',
-    //     min: 0,
-    //     max: 12,
-    //     initial: 1,
-    //     step: 1
-    // },
+    {
+        name: 'scale',
+        min: 0.5,
+        max: 3,
+        initial: 1,
+        step: 0.1
+    },
+    {
+        name: 'random',
+        min: 0,
+        max: 1,
+        initial: 0.1,
+        step: 0.01
+    },
     {
         name: 'blur',
         min: 0,
-        max: 100,
-        initial: 100,
+        max: 360,
+        initial: 200,
+        step: 1
+    },
+    {
+        name: 'density',
+        min: 3,
+        max: 20,
+        initial: 5,
         step: 1
     }
 ];
@@ -106,7 +113,11 @@ function setup(){
 
 function draw(){
     background(0,sliders['blur'].value());
+    // background(0);
+
+    let yGap = height/7;
     let lineNum = floor(height/20);
+    
 
 
     //get FFT waveform
@@ -116,19 +127,22 @@ function draw(){
             let x = map(i, 0, wave.length, 0, width);
             let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0.3, 1));
             // let smoothWave = lerp(wave[i], lastWave[i], sliders['smoothing'].value());
-            let y = map(smoothWave*map(j, 0, lineNum, 0, 1), -1, 1, 0,height);
+            let y = map(smoothWave*map(j, 0, lineNum, 0.5, 1)*sliders['scale'].value(), -1, 1, 0,height);
             // let y = map(smoothWave*sliders['scale'].value(), -1, 1, 0,height);
 
-            y=y-height/2+Math.sqrt(j)*150;
+            y=y-height/2+Math.sqrt(j)*yGap;
+            // console.log(lineNum, height);
             
             noStroke();
-            fill(random(200,220),j*5,50+j*8);
+            // fill(random(200,220),j*5,50+j*8);
+            fill(random(200,220),360-j*7,50+Math.sqrt(j)*40);
+
 
             // strokeWeight(1);
             // fill(255,0,0);
-            if (i%20==0){
+            if (i%sliders['density'].value()==0){
                 // circle(x+random(sliders['random'].value()),y,Math.sqrt(j)/2);
-                circle(x+random(j*2),y,Math.sqrt(j)/2);
+                circle(x+random(j*sliders['random'].value()),y,Math.sqrt(j)/2);
 
                 
             }
