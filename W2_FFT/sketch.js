@@ -33,27 +33,27 @@ let sliders = {};
 // let sliders = [];
 let sliderLabels = [];
 let sliderConfigs = [
-    {
-        name: 'smoothing',
-        min: 0,
-        max: 1,
-        initial: 0.5,
-        step: 0.01
-    },
-    {
-        name: 'scale',
-        min: 0,
-        max: 1,
-        initial: 0.5,
-        step: 0.01
-    },
-    {
-        name: 'random',
-        min: 0,
-        max: 12,
-        initial: 1,
-        step: 1
-    },
+    // {
+    //     name: 'smoothing',
+    //     min: 0,
+    //     max: 1,
+    //     initial: 0.5,
+    //     step: 0.01
+    // },
+    // {
+    //     name: 'scale',
+    //     min: 0,
+    //     max: 1,
+    //     initial: 0.5,
+    //     step: 0.01
+    // },
+    // {
+    //     name: 'random',
+    //     min: 0,
+    //     max: 12,
+    //     initial: 1,
+    //     step: 1
+    // },
     {
         name: 'blur',
         min: 0,
@@ -88,6 +88,7 @@ let setupSlider = function(configsArray){
 function setup(){
     createCanvas(windowWidth, windowHeight);
     background(0);
+    colorMode(HSB,360);
 
 
 
@@ -105,7 +106,7 @@ function setup(){
 
 function draw(){
     background(0,sliders['blur'].value());
-    let lineNum = floor(height/15);
+    let lineNum = floor(height/20);
 
 
     //get FFT waveform
@@ -113,15 +114,23 @@ function draw(){
     for(let j = 0; j<lineNum; j++){
         for(let i=0; i<wave.length; i++){
             let x = map(i, 0, wave.length, 0, width);
-            let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0, 1));
+            let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0.3, 1));
             // let smoothWave = lerp(wave[i], lastWave[i], sliders['smoothing'].value());
             let y = map(smoothWave*map(j, 0, lineNum, 0, 1), -1, 1, 0,height);
             // let y = map(smoothWave*sliders['scale'].value(), -1, 1, 0,height);
 
-            y=y-height/2+j*15;
-            fill(255,0,0);
-            if (i%10==0){
-                circle(x+random(sliders['random'].value()),y,Math.sqrt(j));
+            y=y-height/2+Math.sqrt(j)*150;
+            
+            noStroke();
+            fill(random(200,220),j*5,50+j*8);
+
+            // strokeWeight(1);
+            // fill(255,0,0);
+            if (i%20==0){
+                // circle(x+random(sliders['random'].value()),y,Math.sqrt(j)/2);
+                circle(x+random(j*2),y,Math.sqrt(j)/2);
+
+                
             }
             lastWave[i] = smoothWave;
         }
