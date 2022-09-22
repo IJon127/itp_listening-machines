@@ -1,17 +1,17 @@
-// 'use strict';
+'use strict';
 /**************************************************************************
   P5 Audio FFT Visuallization
   REFERENCES:
   # Michael Simpson's Listening Machines - Fall 2022 - Week 2 collection: https://editor.p5js.org/mgs/collections/ZZLTAa6rT
   # Dan Shiffman’s Coding Train P5.FFT Tutorial: https://youtu.be/2O3nm0Nvbi4
   created 21 Sep 2022
-  modified 21 Sep 2022
+  modified 22 Sep 2022
   by I-Jon Hsieh
  **************************************************************************/
 
 let mic;
 let fft;
-let lastWaveform;
+let lastWave;
 
 // controlling UI
 let micBtn;
@@ -30,6 +30,7 @@ let buttonToggle = function() {
 };
 
 let sliders = {};
+// let sliders = [];
 let sliderLabels = [];
 let sliderConfigs = [
     {
@@ -42,14 +43,14 @@ let sliderConfigs = [
     {
         name: 'scale',
         min: 0,
-        max: 500,
-        initial: 100,
-        step: 1
+        max: 1,
+        initial: 0.5,
+        step: 0.01
     },
     {
         name: 'random',
         min: 0,
-        max: 3,
+        max: 12,
         initial: 1,
         step: 1
     },
@@ -57,11 +58,17 @@ let sliderConfigs = [
         name: 'blur',
         min: 0,
         max: 100,
-        initial: 50,
+        initial: 100,
         step: 1
     }
 ];
 let sliderGap = 25;
+// let setupSlider = function(index, name, minVar, maxVar, iniVar, stepVar){
+//     sliderLabels[index] = createP(name);
+//     sliders[index] = createSlider(minVar, maxVar, iniVar, stepVar);
+//     sliderLabels[index].position(20, index*sliderGap+10);
+//     sliders[index].position(110, index*sliderGap+28);
+// }
 let setupSlider = function(configsArray){
     for(let i=0; i< configsArray.length; i++){
         let s = configsArray[i];
@@ -73,15 +80,15 @@ let setupSlider = function(configsArray){
 }
 
 
-//set colors
-let bgColor = '#000000';
+
 
 
 
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
-    background(bgColor);
+    background(0);
+
 
 
     setupSlider(sliderConfigs);
@@ -92,30 +99,39 @@ function setup(){
 
     fft = new p5.FFT();
     fft.setInput(mic);
-
-    lastWaveform = fft.waveform();
-    console.log(sliders['scale'].value())
+    lastWave = fft.waveform();
 
 }
 
 function draw(){
-    background(bgColor);
+    background(0,sliders['blur'].value());
+    let lineNum = floor(height/15);
 
 
     //get FFT waveform
     let wave = fft.waveform();
+    for(let j = 0; j<lineNum; j++){
+        for(let i=0; i<wave.length; i++){
+            let x = map(i, 0, wave.length, 0, width);
+            let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0, 1));
+            // let smoothWave = lerp(wave[i], lastWave[i], sliders['smoothing'].value());
+            let y = map(smoothWave*map(j, 0, lineNum, 0, 1), -1, 1, 0,height);
+            // let y = map(smoothWave*sliders['scale'].value(), -1, 1, 0,height);
 
-    for(let i=0; i<wave.length; i++){
-        let x = map(i, 0, wave.length, 0, width);
-        let y = map(wave[i], -1, 1, 0,height);
-        fill(255,0,0);
-        circle(x,y,2);
+            y=y-height/2+j*15;
+            fill(255,0,0);
+            if (i%10==0){
+                circle(x+random(sliders['random'].value()),y,Math.sqrt(j));
+            }
+            lastWave[i] = smoothWave;
+        }
     }
+
 
 
 }
 
 function windowResized(){
     resizeCanvas(windowWidth, windowHeight);
-    background(bgColor);
+    background(0);
 }
