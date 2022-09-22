@@ -12,6 +12,7 @@
 let mic;
 let fft;
 let lastWave;
+let binNum;
 
 // controlling UI
 let micBtn;
@@ -63,19 +64,14 @@ let sliderConfigs = [
     },
     {
         name: 'density',
-        min: 3,
-        max: 20,
-        initial: 5,
+        min: 6,
+        max: 9,
+        initial: 9,
         step: 1
     }
 ];
 let sliderGap = 25;
-// let setupSlider = function(index, name, minVar, maxVar, iniVar, stepVar){
-//     sliderLabels[index] = createP(name);
-//     sliders[index] = createSlider(minVar, maxVar, iniVar, stepVar);
-//     sliderLabels[index].position(20, index*sliderGap+10);
-//     sliders[index].position(110, index*sliderGap+28);
-// }
+
 let setupSlider = function(configsArray){
     for(let i=0; i< configsArray.length; i++){
         let s = configsArray[i];
@@ -107,13 +103,18 @@ function setup(){
 
     fft = new p5.FFT();
     fft.setInput(mic);
-    lastWave = fft.waveform();
+
+    binNum = Math.pow(2,sliders['density'].value());
+    lastWave = fft.waveform(binNum);
+    console.log(lastWave.length);
+    lastWave.length = binNum;
+    console.log(lastWave.length);
+
 
 }
 
 function draw(){
     background(0,sliders['blur'].value());
-    // background(0);
 
     let yGap = height/7;
     let lineNum = floor(height/20);
@@ -121,32 +122,30 @@ function draw(){
 
 
     //get FFT waveform
-    let wave = fft.waveform();
+    binNum = Math.pow(2,sliders['density'].value());
+    let wave = fft.waveform(binNum);
+    
+    wave.length = binNum;
+
+
     for(let j = 0; j<lineNum; j++){
-        for(let i=0; i<wave.length; i++){
-            let x = map(i, 0, wave.length, 0, width);
+        for(let i=0; i<binNum; i++){
+            let x = map(i, 0, binNum, 0, width);
             let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0.3, 1));
             // let smoothWave = lerp(wave[i], lastWave[i], sliders['smoothing'].value());
             let y = map(smoothWave*map(j, 0, lineNum, 0.5, 1)*sliders['scale'].value(), -1, 1, 0,height);
-            // let y = map(smoothWave*sliders['scale'].value(), -1, 1, 0,height);
+
 
             y=y-height/2+Math.sqrt(j)*yGap;
-            // console.log(lineNum, height);
             
             noStroke();
-            // fill(random(200,220),j*5,50+j*8);
+
             fill(random(200,220),360-j*7,50+Math.sqrt(j)*40);
 
+            circle(x+random(j*sliders['random'].value()),y,Math.sqrt(j)/2);
 
-            // strokeWeight(1);
-            // fill(255,0,0);
-            if (i%sliders['density'].value()==0){
-                // circle(x+random(sliders['random'].value()),y,Math.sqrt(j)/2);
-                circle(x+random(j*sliders['random'].value()),y,Math.sqrt(j)/2);
-
-                
-            }
             lastWave[i] = smoothWave;
+            lastWave.length = binNum;
         }
     }
 
