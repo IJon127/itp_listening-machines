@@ -129,8 +129,8 @@ function draw(){
 
 
     for(let j = 0; j<lineNum; j++){
-        for(let i=0; i<binNum; i++){
-            let x = map(i, 0, binNum, 0, width);
+        for(let i=0; i<wave.length; i++){
+            let x = map(i, 0, wave.length, 0, width);
             let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0.3, 1));
             // let smoothWave = lerp(wave[i], lastWave[i], sliders['smoothing'].value());
             let y = map(smoothWave*map(j, 0, lineNum, 0.5, 1)*sliders['scale'].value(), -1, 1, 0,height);
@@ -148,8 +148,6 @@ function draw(){
             lastWave.length = binNum;
         }
     }
-
-
 
 }
 
