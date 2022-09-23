@@ -31,16 +31,8 @@ let buttonToggle = function() {
 };
 
 let sliders = {};
-// let sliders = [];
 let sliderLabels = [];
 let sliderConfigs = [
-    // {
-    //     name: 'smoothing',
-    //     min: 0,
-    //     max: 1,
-    //     initial: 0.5,
-    //     step: 0.01
-    // },
     {
         name: 'scale',
         min: 0.5,
@@ -66,7 +58,7 @@ let sliderConfigs = [
         name: 'density',
         min: 6,
         max: 9,
-        initial: 9,
+        initial: 8,
         step: 1
     }
 ];
@@ -89,7 +81,8 @@ let setupSlider = function(configsArray){
 
 
 function setup(){
-    createCanvas(windowWidth, windowHeight);
+    // createCanvas(windowWidth, windowHeight);
+    createCanvas(1200, 800);
     background(0);
     colorMode(HSB,360);
 
@@ -132,16 +125,13 @@ function draw(){
         for(let i=0; i<wave.length; i++){
             let x = map(i, 0, wave.length, 0, width);
             let smoothWave = lerp(wave[i], lastWave[i], map(j, 0, lineNum, 0.3, 1));
-            // let smoothWave = lerp(wave[i], lastWave[i], sliders['smoothing'].value());
             let y = map(smoothWave*map(j, 0, lineNum, 0.5, 1)*sliders['scale'].value(), -1, 1, 0,height);
 
 
             y=y-height/2+Math.sqrt(j)*yGap;
             
             noStroke();
-
             fill(random(200,220),360-j*7,50+Math.sqrt(j)*40);
-
             circle(x+random(j*sliders['random'].value()),y,Math.sqrt(j)/2);
 
             lastWave[i] = smoothWave;
@@ -151,7 +141,7 @@ function draw(){
 
 }
 
-function windowResized(){
-    resizeCanvas(windowWidth, windowHeight);
-    background(0);
-}
+// function windowResized(){
+//     resizeCanvas(windowWidth, windowHeight);
+//     background(0);
+// }
