@@ -12,7 +12,7 @@
 let mic;
 let fft;
 let lastWave;
-let binNum;
+let binNum = 256;
 
 // controlling UI
 let micBtn;
@@ -53,14 +53,14 @@ let sliderConfigs = [
         max: 360,
         initial: 200,
         step: 1
-    },
-    {
-        name: 'density',
-        min: 6,
-        max: 9,
-        initial: 8,
-        step: 1
     }
+    // {
+    //     name: 'density',
+    //     min: 6,
+    //     max: 9,
+    //     initial: 8,
+    //     step: 1
+    // }
 ];
 let sliderGap = 25;
 
@@ -82,7 +82,7 @@ let setupSlider = function(configsArray){
 
 function setup(){
     // createCanvas(windowWidth, windowHeight);
-    createCanvas(1200, 800);
+    createCanvas(1600, 800);
     background(0);
     colorMode(HSB,360);
 
@@ -97,11 +97,9 @@ function setup(){
     fft = new p5.FFT();
     fft.setInput(mic);
 
-    binNum = Math.pow(2,sliders['density'].value());
+    // binNum = Math.pow(2,sliders['density'].value());
     lastWave = fft.waveform(binNum);
-    console.log(lastWave.length);
     lastWave.length = binNum;
-    console.log(lastWave.length);
 
 
 }
@@ -115,9 +113,8 @@ function draw(){
 
 
     //get FFT waveform
-    binNum = Math.pow(2,sliders['density'].value());
+    // binNum = Math.pow(2,sliders['density'].value());
     let wave = fft.waveform(binNum);
-    
     wave.length = binNum;
 
 
