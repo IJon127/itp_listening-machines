@@ -1,0 +1,54 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+main {
+  margin: 15px;
+  z-index: 10;
+  background-color: #ffffff;
+}
+canvas {
+  display: block;
+}
+
+h1 {
+  margin: 0;
+  font-size: 38px;
+}
+
+p {
+  font-size: 14px;
+}
+
+input {
+  font-family: monospace;
+}
+
+button {
+  background-color: #111;
+  color: #fff;
+  font-family: monospace;
+  text-align: center;
+  width: 70px;
+  height: 30px;
+  border: solid 1px;
+  border-radius: 7px;
+}
+
+.intro {
+  width: 370px;
+}
+
+.buttons-container {
+  display: inline-block;
+}
+.pauseBtn {
+  background-color: #ffffff;
+  color: #000000;
+}
+.hide {
+  display: none;
+}
