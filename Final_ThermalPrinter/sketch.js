@@ -4,7 +4,7 @@
   REFERENCES:
   # Michael Simpson's Listening Machines - Fall 2022 - Week 3 collection: https://editor.p5js.org/mgs/sketches/PbKpTBsub
   created 13 Oct 2022
-  modified 15 Oct 2022
+  modified 15 Dec 2022
   by I-Jon Hsieh & Jinny Kang
  **************************************************************************/
 
@@ -46,13 +46,13 @@ function draw() {
     if (chromaData && energyData) {
       //draw chroma data
       for (let i = 0; i < chromaData.length - 1; i++) {
-        let chromaClr = map(chromaData[i], 0.3, 1, 250, 10);
+        let chromaClr = map(chromaData[i], 0.3, 1, 210, 10);
         let skip = floor(255 / chromaClr);
 
         for (let p = 0; p < 30; p++) {
           if (p % skip == 0) {
             fill(0);
-            rect(i * 30 + p, counter, x, 2);
+            rect(i * 30 + p + random(6), counter, x, 2);
           }
         }
       }
