@@ -24,6 +24,16 @@ let again = false;
 
 let myFont;
 
+//const density = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
+// const density = '       .:-i|=+%O#@'
+const density = " .•:;░▒▓█";
+
+// variable to hold an instance of the p5.webserial library:
+const serial = new p5.WebSerial();
+let portButton;
+let inData;
+let outByte = [];
+
 function setup() {
   let cnv = createCanvas((windowHeight / 11) * 8.5, windowHeight); //letter size ratio
   cnv.position(480, 0);
@@ -31,49 +41,59 @@ function setup() {
 
   startBtn = select("#startBtn");
   startBtn.mousePressed(setupMeyda);
+
+  // WebSerial setup....................
+  if (!navigator.serial) {
+    alert("WebSerial is not supported in this browser. Try Chrome or MS Edge.");
+  }
+  // if serial is available, add connect/disconnect listeners:
+  navigator.serial.addEventListener("connect", portConnect);
+  navigator.serial.addEventListener("disconnect", portDisconnect);
+  // check for any ports that are available:
+  serial.getPorts();
+  // if there's no port chosen, choose one:
+  serial.on("noport", makePortButton);
+  // open whatever port is available:
+  serial.on("portavailable", openPort);
+  // handle serial errors:
+  serial.on("requesterror", portError);
+  // handle any incoming serial data:
+  serial.on("data", serialEvent);
+  serial.on("close", makePortButton);
+  serial.open(19200);
 }
 
 function draw() {
   noStroke();
   let x = 1;
   let currHeight = height - counter;
+  //serial.clear();
 
   if (micStarted) {
+    //let outString;
     if (chromaData && energyData) {
-      //draw chroma data
-      for (let i = 0; i < chromaData.length - 1; i++) {
-        let chromaClr = map(chromaData[i], 0.3, 1, 210, 10);
-        let skip = floor(255 / chromaClr);
+      for (let i = 0; i < chromaData.length; i++) {
+        let chromaClr = floor(map(chromaData[i], 0.3, 1, 255, 0));
+        outByte[i] = chromaClr;
+        // let skip = floor(255 / chromaClr);
 
-        for (let p = 0; p < 30; p++) {
-          if (p % skip == 0) {
-            fill(0);
-            rect(i * 30 + p + random(6), counter, x, 2);
-          }
-        }
+        // for (let p = 0; p < 30; p++) {
+        //   if (p % skip == 0) {
+        //     fill(0);
+        //     rect(i * 30 + p + random(6), counter, x, 2);
+        //   }
+        // }
       }
 
       if (energyData > 0.3) {
-        fill(0);
-        rect(x * chromaData.length - 1, counter, 5, 1);
+        serial.write(byte(outByte));
+        console.log(outByte);
+        //fill(0);
+        //rect(x * chromaData.length - 1, counter, 5, 1);
       }
-
-      //draw a white rect
-      fill(255);
-      rect(0, counter + 1, width, currHeight - 1);
 
       //update counter
       counter++;
-    }
-
-    //reset
-    if (counter > height) {
-      micStarted = false;
-      startBtn.html("restart");
-      startBtn.removeClass("pauseBtn");
-      saveBtn.removeClass("hide");
-      again = true;
-      counter = 0;
     }
   }
 }
@@ -106,12 +126,12 @@ function setupMeyda() {
     startBtn.html("pause");
     startBtn.class("pauseBtn");
 
-    if (again) {
-      counter = 0;
-      background(255);
-      saveBtn.class("hide");
-      again = false;
-    }
+    // if (again) {
+    //   counter = 0;
+    //   background(255);
+    //   saveBtn.class("hide");
+    //   again = false;
+    // }
 
     createMicSrcFrom(audioCtx)
       .then((src) => {
@@ -166,6 +186,7 @@ function openPort() {
   // once the port opens, let the user know:
   function initiateSerial() {
     console.log("port open");
+    serial.clear();
   }
   // hide the port button once a port is chosen:
   if (portButton) portButton.hide();
